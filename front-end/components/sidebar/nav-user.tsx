@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-  UserRound,
-} from "lucide-react";
+import { Bell, ChevronsUpDown, UserRound } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -27,10 +19,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-import avatarPlaceholder from "@/public/avatar_placeholder.jpg";
-
-import { useAuthStore } from "@/stores/useAuthStore";
-import { useRouter } from "next/navigation";
 import { User } from "@/types/user";
 import Image from "next/image";
 import { useState } from "react";
@@ -57,7 +45,10 @@ export function NavUser({ user }: { user: User | null }) {
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user?.avatarUrl!} alt={user?.username} />
                   <AvatarFallback className="rounded-lg">
-                    <Image src={avatarPlaceholder} alt="avatar-placeholder" />
+                    <Image
+                      src={"/avatar_placeholder.jpg"}
+                      alt="avatar-placeholder"
+                    />
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -80,7 +71,10 @@ export function NavUser({ user }: { user: User | null }) {
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={user?.avatarUrl!} alt={user?.username} />
                     <AvatarFallback className="rounded-lg">
-                      <Image src={avatarPlaceholder} alt="avatar-placeholder" />
+                      <Image
+                        src={"/avatar_placeholder.jpg"}
+                        alt="avatar-placeholder"
+                      />
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">

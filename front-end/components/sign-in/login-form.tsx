@@ -21,8 +21,6 @@ import * as z from "zod";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "next/navigation";
-import logo from "@/public/logo.png";
-import placeholder from "@/public/placeholder.png";
 import InputPassword from "../custom/InputPassword";
 
 const formSchema = z.object({
@@ -63,7 +61,7 @@ export function LoginForm({
           <div className="p-4">
             <div className="text-center sapce-y-4 mb-6">
               <Image
-                src={logo}
+                src={"/logo.png"}
                 alt="image"
                 width={100}
                 height={100}
@@ -123,7 +121,7 @@ export function LoginForm({
           </div>
           <div className="bg-muted relative hidden md:block overflow-hidden">
             <Image
-              src={placeholder}
+              src={"/placeholder.png"}
               alt="image"
               width={500}
               height={500}
