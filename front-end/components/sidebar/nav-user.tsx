@@ -76,6 +76,8 @@ export function NavUser({ user }: { user: User | null }) {
                       <Image
                         src={"/avatar_placeholder.jpg"}
                         alt="avatar-placeholder"
+                        width={100}
+                        height={100}
                       />
                     </AvatarFallback>
                   </Avatar>
