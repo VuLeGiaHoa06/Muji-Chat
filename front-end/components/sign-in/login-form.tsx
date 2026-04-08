@@ -51,7 +51,7 @@ export function LoginForm({
     // truyen du lieu vao store
     await signIn(username, password);
 
-    router.push("/");
+    window.location.href = "/";
   };
 
   return (
