@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://muji-chat-1-back-end.onrender.com/api/:path*", // URL backend Render của bạn
+        destination: "https://muji-chat-1-front-end.onrender.com/api/:path*", // URL backend Render của bạn
       },
     ];
   },
