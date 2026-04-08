@@ -1,4 +1,3 @@
-import { config } from "./../middleware";
 import { useAuthStore } from "@/stores/useAuthStore";
 import axios from "axios";
 
