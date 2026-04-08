@@ -7,7 +7,7 @@ export const middleware = (req: NextRequest) => {
   const token = req.cookies.get("refreshToken")?.value;
 
   // routes sẽ được bảo vệ - khi người dùng chưa đnăg nhập
-  const protectedRoutes = ["/chat", "/"];
+  const protectedRoutes = ["/"];
 
   // lấy curentPath để so sánh - nếu kh có token - thì redirect sang signIn
   const { pathname } = req.nextUrl;
@@ -25,5 +25,5 @@ export const middleware = (req: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/chat/:path*", "/"], // middleware này sẽ được gọi - khi url = matcher
+  matcher: ["/"], // middleware này sẽ được gọi - khi url = matcher
 };
