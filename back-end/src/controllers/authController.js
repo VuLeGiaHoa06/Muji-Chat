@@ -111,7 +111,7 @@ export const signOut = async (req, res) => {
       res.clearCookie("refreshToken");
     }
 
-    res.sendStatus(204);
+    return res.status(200).json({ message: "Sign out thành công" });
   } catch (error) {
     console.log("auth-controller_sign-out", error);
     return res.status(500).send("Internal Server Error");

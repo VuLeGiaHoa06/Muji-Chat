@@ -46,12 +46,16 @@ export function LoginForm({
 
   // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { username, password } = values;
+    try {
+      const { username, password } = values;
 
-    // truyen du lieu vao store
-    await signIn(username, password);
+      // truyen du lieu vao store
+      await signIn(username, password);
 
-    router.push("/");
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

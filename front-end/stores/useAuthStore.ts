@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthState>()(
 
       signOut: async () => {
         try {
-          // set({ loading: true });
+          set({ loading: true });
 
           // goi api
           await authService.signOut();

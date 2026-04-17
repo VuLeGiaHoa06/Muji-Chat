@@ -13,9 +13,13 @@ const Logout = () => {
 
   // handles
   const handleLogout = async () => {
-    await signOut();
+    try {
+      await signOut();
 
-    router.push("/sign-in");
+      router.push("/sign-in");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // render
