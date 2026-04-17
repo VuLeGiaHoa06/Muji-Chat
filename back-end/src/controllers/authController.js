@@ -12,7 +12,7 @@ const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days
 const configCookie = {
   httpOnly: true, // kh cho browser sử dụng js để truy cập cookie này
   secure: true, // cho phép truy cập bằng https - tăng tính bảo mật
-  sameSite: "none", // các website khác - cũng có thể truy cập được cookie này - bắt buộc đi cùng với secure = true
+  sameSite: "lax", // các website khác - cũng có thể truy cập được cookie này - bắt buộc đi cùng với secure = true
 };
 
 export const signUp = async (req, res) => {
