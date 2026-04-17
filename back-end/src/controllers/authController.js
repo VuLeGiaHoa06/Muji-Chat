@@ -103,13 +103,15 @@ export const signOut = async (req, res) => {
     // truy cập token - phải sử dụng thư viện cookieParser
     const token = req.cookies?.refreshToken;
 
-    if (token) {
-      // xoá token trong db
-      await Session.deleteOne({ refreshToken: token });
-
-      // xoá refresh token trên trình duỵet
-      res.clearCookie("refreshToken");
+    if (!token) {
+      return res.status(403).json({ message: "Token không tồn tại" });
     }
+
+    // xoá token trong db
+    await Session.deleteOne({ refreshToken: token });
+
+    // xoá refresh token trên trình duỵet
+    res.clearCookie("refreshToken");
 
     return res.status(200).json({ message: "Sign out thành công" });
   } catch (error) {
