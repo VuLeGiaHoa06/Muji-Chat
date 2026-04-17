@@ -11,10 +11,10 @@ export const middleware = (req: NextRequest) => {
   const protectedRoute = ["/"];
 
   if (protectedRoute.some((route) => pathname.includes(route) && !token)) {
-    return NextResponse.redirect(new URL("/login", req.url)); // http://localhost:3000/login
+    return NextResponse.redirect(new URL("/sign-in", req.url)); // http://localhost:3000/login
   }
 
-  if (pathname.startsWith("/login") && token) {
+  if (pathname.startsWith("/sign-in") && token) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
