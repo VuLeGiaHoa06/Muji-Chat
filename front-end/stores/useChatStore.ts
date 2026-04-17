@@ -120,19 +120,14 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      sendDirectMessage: async (recipientId, content, imgUrl) => {
+      sendDirectMessage: async (formData) => {
         const { activeConversationId } = get();
 
         if (!activeConversationId) return;
 
         try {
           // Gọi api
-          await chatService.sendDirectMessage(
-            recipientId,
-            content,
-            imgUrl,
-            activeConversationId,
-          );
+          await chatService.sendDirectMessage(formData);
 
           // Update lại field seenBy
           set((state) => {

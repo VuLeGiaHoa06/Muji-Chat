@@ -17,11 +17,9 @@ const messageSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    imgUrl: {
-      type: String,
-    },
+    images: [{ type: String }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // compound index

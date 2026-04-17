@@ -1,11 +1,9 @@
-import { access } from "fs";
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { toast } from "sonner";
 import { authService } from "@/services/authService";
 import { AuthState } from "@/types/store";
 import { useChatStore } from "./useChatStore";
-import { useFriendStore } from "./useFriendStore";
 
 export const useAuthStore = create<AuthState>()(
   persist(

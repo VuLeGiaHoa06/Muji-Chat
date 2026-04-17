@@ -12,4 +12,20 @@ export const userService = {
 
     return res.data;
   },
+
+  uploadProfile: async (
+    displayName: string,
+    email: string,
+    phone: number,
+    bio: string,
+  ) => {
+    const res = await api.post("/users/uploadProfile", {
+      displayName,
+      email,
+      phone,
+      bio,
+    });
+
+    return res.data;
+  },
 };

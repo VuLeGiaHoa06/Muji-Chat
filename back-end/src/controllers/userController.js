@@ -1,4 +1,4 @@
-import { uploadImageFromBuffer } from "../middlewares/uploadMiddleware.js";
+import { uploadImageFromBufferForAvatar } from "../middlewares/uploadMiddleware.js";
 import User from "../models/User.js";
 
 export const authMe = async (req, res) => {
@@ -44,7 +44,7 @@ export const uploadAvatar = async (req, res) => {
       return res.status(400).json({ message: "Avatar load failed" });
     }
 
-    const result = await uploadImageFromBuffer(file.buffer);
+    const result = await uploadImageFromBufferForAvatar(file.buffer);
 
     // update db
     const updatedUser = await User.findByIdAndUpdate(
@@ -66,5 +66,39 @@ export const uploadAvatar = async (req, res) => {
   } catch (error) {
     console.log("uploadAvatar_userController", error);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// TODO
+export const uploadProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const { displayName, phone, bio, email } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      { _id: userId },
+      {
+        displayName,
+        phone,
+        bio,
+        email,
+      },
+      {
+        new: true, // Trả về dữ liệu đã update
+      },
+    ).select("-hashedPassword");
+
+    if (!updatedUser) {
+      return res.status(400).json({ message: "Không tìm thấy user để update" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "update profile thành công", updatedUser });
+  } catch (error) {
+    console.log("userController_uploadProfile", error);
+
+    return res.status(500).json({ message: "Lỗi hệ thống" });
   }
 };

@@ -1,18 +1,37 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
-import { emitNewMessage, updateConversationAfterCreateMessage } from "../utils/messageHelper.js";
+import {
+  emitNewMessage,
+  updateConversationAfterCreateMessage,
+} from "../utils/messageHelper.js";
 import { io } from "../socket/index.js";
+import { uploadImageFromBufferForMessage } from "../middlewares/uploadMiddleware.js";
 
 export const sendDirectMessage = async (req, res) => {
   try {
     // 1. lay id cua nguoi nhan, nguoi gui, content, coversationId tu req.body
+    const images = req.files;
     const { content, conversationId } = req.body;
     const senderId = req.user._id;
     const recipientId = req.recipientId;
 
     // 3. check coi co noi dung ben trong kh
-    if (!content) {
-      return res.status(400).json({ message: "Thiếu nội dung" });
+    if (!content && !images) {
+      return res.status(400).json({
+        message: "Thiếu nội dung! Cần cung cấp đoạn văn hay hình ảnh",
+      });
+    }
+
+    let imgUrls;
+
+    if (images.length > 0) {
+      const uploadPromise = images.map((i) =>
+        uploadImageFromBufferForMessage(i.buffer),
+      );
+
+      const results = await Promise.all(uploadPromise);
+
+      imgUrls = results.map((r) => r.secure_url);
     }
 
     let conversation;
@@ -43,6 +62,7 @@ export const sendDirectMessage = async (req, res) => {
       conversationId: conversation?._id,
       senderId,
       content,
+      images: imgUrls,
     });
 
     // 7. update conversation

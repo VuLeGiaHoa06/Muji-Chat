@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // browser cho phep req dinh kem cookie cho server
 });
 
@@ -38,10 +38,10 @@ api.interceptors.response.use(
       return Promise.reject(err);
     }
 
-    originalRequeset._retyCount = originalRequeset._retryCount ?? 0;
+    originalRequeset._retryCount = originalRequeset._retryCount ?? 0;
 
-    if (originalRequeset.status === 403 || originalRequeset._retyCount > 4) {
-      originalRequeset._retyCount += 1; // cong len 1
+    if (originalRequeset.status === 403 || originalRequeset._retryCount > 4) {
+      originalRequeset._rertyCount += 1; // cong len 1
 
       try {
         await useAuthStore.getState().refresh();

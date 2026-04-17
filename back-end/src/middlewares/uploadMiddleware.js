@@ -8,11 +8,33 @@ export const upload = multer({
   },
 });
 
-export const uploadImageFromBuffer = (buffer, options) => {
+export const uploadImageFromBufferForAvatar = (buffer, options) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "moji_chat/avatars",
+        resource_type: "image",
+        transformation: [{ width: 200, height: 200, crop: "fill" }],
+        ...options,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      },
+    );
+
+    uploadStream.end(buffer);
+  });
+};
+
+export const uploadImageFromBufferForMessage = (buffer, options) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "moji_chat/messages",
         resource_type: "image",
         transformation: [{ width: 200, height: 200, crop: "fill" }],
         ...options,

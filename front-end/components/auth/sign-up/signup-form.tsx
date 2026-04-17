@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { FieldDescription } from "../ui/field";
+import { FieldDescription } from "../../ui/field";
 import {
   Form,
   FormControl,

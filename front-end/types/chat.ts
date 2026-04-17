@@ -40,6 +40,7 @@ export interface Message {
   conversationId: string;
   senderId: string;
   content: string;
+  images: string[];
   isOwn: boolean;
   createdAt: string;
   updatedAt: string;

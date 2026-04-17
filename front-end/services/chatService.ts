@@ -19,16 +19,13 @@ const chatService = {
   },
 
   sendDirectMessage: async (
-    recipientId: string,
-    content: string,
-    imgUrl?: string,
-    conversationId?: string,
+    // recipientId: string,
+    // content: string,
+    formData: FormData,
+    // conversationId?: string,
   ) => {
-    const res = await api.post("/messages/direct", {
-      recipientId,
-      content,
-      imgUrl,
-      conversationId,
+    const res = await api.post("/messages/direct", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     return res.data;

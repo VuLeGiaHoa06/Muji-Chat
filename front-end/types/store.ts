@@ -47,12 +47,7 @@ export interface ChatState {
   clearState: () => void;
   fetchConversation: () => Promise<void>;
   fetchMessages: (convId?: string) => Promise<void>;
-  sendDirectMessage: (
-    recipientId: string,
-    content: string,
-    imgUrl?: string,
-    conversationId?: string,
-  ) => Promise<void>;
+  sendDirectMessage: (formData: FormData) => Promise<void>;
   sendGroupMessage: (
     conversationId: string,
     content: string,
@@ -91,5 +86,13 @@ export interface FriendState {
 }
 
 export interface UserState {
+  loading: boolean;
+
   uploadAvatar: (formData: FormData) => Promise<void>;
+  uploadProfile: (
+    displayName: string,
+    phone: number,
+    email: string,
+    bio: string,
+  ) => Promise<void>;
 }

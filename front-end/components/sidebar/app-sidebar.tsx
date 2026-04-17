@@ -51,8 +51,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <CreateNewChat />
           </SidebarGroupContent>
         </SidebarGroup>
-
-        <Separator className="max-w-[346px] ml-3" />
       </SidebarHeader>
 
       {/* Content */}

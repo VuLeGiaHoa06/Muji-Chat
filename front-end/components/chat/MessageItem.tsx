@@ -85,14 +85,27 @@ const MessageItem = ({
             )}
           </div>
         )}
-        <p
-          className={cn(
-            "rounded-full shadow-md px-4 py-2 ml-2",
-            message.isOwn ? "bg-purple-500 text-white" : "bg-white",
+        <div className="flex flex-col gap-2 items-end">
+          {message.content && (
+            <p
+              className={cn(
+                "rounded-full shadow-md px-4 py-2 ml-2",
+                message.isOwn ? "bg-purple-500 text-white" : "bg-white",
+              )}
+            >
+              {message.content}
+            </p>
           )}
-        >
-          {message.content}
-        </p>
+          {message.images.length > 0 &&
+            message.images.map((i) => (
+              <div
+                key={i}
+                className="flex flex-col gap-2 h-40 w-40 rounded-lg overflow-hidden "
+              >
+                <img src={i} alt="i" className="w-full h-full" />
+              </div>
+            ))}
+        </div>
       </div>
 
       {/* Time */}
