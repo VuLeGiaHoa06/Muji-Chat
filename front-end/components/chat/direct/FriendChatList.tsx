@@ -13,13 +13,17 @@ const FriendChatList = () => {
   // 2. GUARD CLAUSE (Mệnh đề bảo vệ)
   // =========================================
   if (!user) return;
-  if (conversations.length === 0) return;
 
   // =========================================
   // 3. LOCAL STATE (Biến nội bộ)
   // =========================================
   const friendChats = conversations.filter((conv) => conv.type === "direct");
 
+  if (friendChats.length === 0) {
+    return (
+      <p className="text-gray-400 font-semibold ml-2">Chưa có bạn bè nào!</p>
+    );
+  }
 
   // =========================================
   // 4. RENDER (JSX)

@@ -10,8 +10,6 @@ const GroupChatList = () => {
   // =========================================
   const { conversations } = useChatStore();
 
-  if (conversations.length === 0) return;
-
   const groupChats = conversations.filter((conv) => conv.type === "group");
 
   if (groupChats.length === 0) {

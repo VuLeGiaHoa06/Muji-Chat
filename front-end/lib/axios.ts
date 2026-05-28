@@ -2,7 +2,10 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL:
+    process.env.NEXT_PUBLIC_PRODUCTION === "PRODUCTION"
+      ? "/api"
+      : process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // browser cho phep req dinh kem cookie cho server
 });
 
