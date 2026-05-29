@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import React from "react";
 import AvatarImg from "../avatar/AvatarImg";
@@ -18,21 +20,26 @@ const FriendRequestItem = ({
   return (
     <div
       className={cn(
-        "w-full border-2 border-gray-300 shadow-sm bg-white rounded-xl p-3 flex gap-2 justify-between",
+        "w-full flex items-center justify-between p-3.5 rounded-2xl transition-all duration-200 bg-zinc-500/5 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-900/40 hover:border-violet-500/30 dark:hover:border-violet-500/30 hover:bg-violet-500/5 dark:hover:bg-violet-500/10 hover:scale-[1.01] hover:shadow-lg hover:shadow-violet-500/5 animate-fade-in",
       )}
     >
-      <div className="flex gap-3 items-center justify-between w-full">
-        {/* Avatar */}
-        <div className="flex gap-2 items-center">
-          <AvatarImg avatarUrl={avatarUrl} name={displayName} />
+      <div className="flex gap-3.5 items-center justify-between w-full">
+        {/* Avatar & Info */}
+        <div className="flex gap-3 items-center">
+          <AvatarImg avatarUrl={avatarUrl} name={displayName} size="md" />
 
-          <div>
-            <p className="text-[18px] font-bold">{displayName}</p>
-            <p className="text-[12px] text-gray-500">@{username}</p>
+          <div className="flex flex-col text-left">
+            <span className="font-bold text-sm text-zinc-800 dark:text-zinc-200">
+              {displayName}
+            </span>
+            <span className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+              @{username || "username"}
+            </span>
           </div>
         </div>
 
-        <div className="flex gap-2">{action}</div>
+        {/* Action button container */}
+        <div className="flex items-center gap-2 flex-shrink-0">{action}</div>
       </div>
     </div>
   );

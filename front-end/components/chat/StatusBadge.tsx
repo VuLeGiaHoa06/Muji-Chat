@@ -2,11 +2,11 @@ import React from "react";
 
 const StatusBadge = ({ status }: { status: "online" | "offline" }) => {
   return (
-    <div
-      className={`h-3 w-3 rounded-full border-2 border-gray-100 absolute right-0 bottom-0 ${
-        status === "online" ? "bg-green-500" : "bg-gray-500"
+    <span
+      className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-sidebar transition-colors duration-300 ${
+        status === "online" ? "bg-green-500 online-glow" : "bg-gray-400"
       }`}
-    ></div>
+    />
   );
 };
 
