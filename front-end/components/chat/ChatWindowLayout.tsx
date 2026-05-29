@@ -1,42 +1,37 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { SidebarInset } from "../ui/sidebar";
 import ChatWindowHeader from "./ChatWindowHeader";
 import ChatWindowBody from "./ChatWindowBody";
 import MessageInput from "./MessageInput";
 import { useChatStore } from "@/stores/useChatStore";
 import ChatWelcomeScreen from "./ChatWelcomeScreen";
-import { useAuthStore } from "@/stores/useAuthStore";
 
 const ChatWindowLayout = () => {
-  // =========================================
-  // 1. STORE & HOOKS (Dữ liệu toàn cục)
-  // =========================================
   const { conversations, activeConversationId } = useChatStore();
 
-  // =========================================
-  // 2. LOCAL STATE (Biến nội bộ)
-  // =========================================
   const selectedConv =
     conversations.find((conv) => conv._id === activeConversationId) ?? null;
 
-  // =========================================
-  // 3. RENDER (JSX)
-  // =========================================
   if (!selectedConv) {
     return <ChatWelcomeScreen />;
   }
 
   return (
-    <SidebarInset className="h-full">
-      {/* Header */}
+    <SidebarInset
+      className="flex flex-col h-full overflow-hidden"
+      style={{ background: "var(--background)" }}
+    >
+      {/* Header – fixed at top */}
       <ChatWindowHeader selectedConv={selectedConv} />
 
-      {/* Body */}
-      <ChatWindowBody selectedConv={selectedConv} />
+      {/* Body – scrollable, fills remaining space */}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <ChatWindowBody selectedConv={selectedConv} />
+      </div>
 
-      {/* Message input */}
+      {/* Input – fixed at bottom */}
       <MessageInput selectedConv={selectedConv} />
     </SidebarInset>
   );

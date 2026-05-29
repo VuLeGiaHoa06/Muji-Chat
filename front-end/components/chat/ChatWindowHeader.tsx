@@ -1,99 +1,122 @@
+"use client";
+
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
 import { Conversation } from "@/types/chat";
 import { useAuthStore } from "@/stores/useAuthStore";
 import AvatarImg from "../avatar/AvatarImg";
 import { useChatStore } from "@/stores/useChatStore";
 import StatusBadge from "./StatusBadge";
 import { useSocketStore } from "@/stores/useSocketStore";
+import { Phone, Video, Info } from "lucide-react";
 
-// nhận thông tin conversation
-// để hiển thị header
-// bao gồm: sidebarTrigger, avatar, displayname
 const ChatWindowHeader = ({
   selectedConv,
 }: {
   selectedConv?: Conversation;
 }) => {
-  // =========================================
-  // 1. STORE & HOOKS (Dữ liệu toàn cục)
-  // =========================================
   const { activeConversationId, conversations } = useChatStore();
   const { user } = useAuthStore();
   const { onlineUsers } = useSocketStore();
 
-  // =========================================
-  // 2. LOCAL STATE (Biến nội bộ)
-  // =========================================
-
-  // Nếu conv chưa được select từ sidebar
-  // Thì header kiểm tra trong store - có conversation nào đang được active không
   const selectedConversation =
     selectedConv ?? conversations.find((c) => c._id === activeConversationId);
 
   let otherUser;
-  // Lấy thông tin của người còn lại - nếu là direct
   if (selectedConversation?.type === "direct") {
     otherUser = selectedConversation?.participants.find(
       (p) => p._id !== user?._id,
     );
   }
 
-  // =========================================
-  // 6. RENDER (JSX)
-  // =========================================
-
-  if (!selectedConversation) {
-    // nếu không có conversation nào được chọn
-    // thì return
-    return (
-      <div className="min-h-[60px] px-4 py-2 w-full bg-gray-100 flex items-center gap-3 sticky top-0">
-        <SidebarTrigger className="-ml-1 cursor-pointer" />
-      </div>
-    );
-  }
+  const isOnline = otherUser ? onlineUsers.includes(otherUser._id) : false;
 
   return (
-    <div className="min-h-[60px] px-4 py-2 w-full bg-gray-100 flex items-center gap-3 sticky top-0">
-      <SidebarTrigger className="-ml-1 cursor-pointer" />
-      <Separator
-        orientation="vertical"
-        className="mr-2 data-[orientation=vertical]:h-4"
-      />
+    <div
+      className="flex items-center gap-3 px-4 py-3 sticky top-0 z-10 border-b border-border"
+      style={{
+        background: "var(--background)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        minHeight: "60px",
+      }}
+    >
+      {/* Sidebar trigger */}
+      <SidebarTrigger className="-ml-1 cursor-pointer w-8 h-8 rounded-xl hover:bg-accent transition-colors flex-shrink-0" />
 
-      {selectedConversation?.type === "direct" ? (
-        // chat trực tiếp
-        <div className="flex gap-2 items-center">
-          <div className="relative">
+      {/* Divider */}
+      <div className="w-px h-5 bg-border flex-shrink-0" />
+
+      {/* Conversation info */}
+      {!selectedConversation ? (
+        <div className="flex-1" />
+      ) : selectedConversation.type === "direct" ? (
+        // Direct chat
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="relative flex-shrink-0">
             <AvatarImg
               avatarUrl={otherUser?.avatarUrl}
               name={otherUser?.displayName}
             />
-            <StatusBadge
-              status={
-                onlineUsers.includes(otherUser?._id ?? "")
-                  ? "online"
-                  : "offline"
-              }
-            />
+            <StatusBadge status={isOnline ? "online" : "offline"} />
           </div>
-          <p className="font-bold text-lg">{otherUser?.displayName}</p>
+          <div className="min-w-0">
+            <p className="font-semibold text-sm truncate text-foreground">
+              {otherUser?.displayName}
+            </p>
+            <p
+              className={`text-[11px] font-medium ${
+                isOnline ? "text-green-500" : "text-muted-foreground"
+              }`}
+            >
+              {isOnline ? "Đang hoạt động" : "Ngoại tuyến"}
+            </p>
+          </div>
         </div>
       ) : (
-        // chat nhóm
-        <div className="flex gap-2 items-center">
-          <div className="flex -space-x-2">
-            {selectedConversation?.participants.map((p) => (
+        // Group chat
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex -space-x-2 flex-shrink-0">
+            {selectedConversation.participants.slice(0, 3).map((p) => (
               <AvatarImg
                 key={p._id}
                 avatarUrl={p.avatarUrl}
                 name={p.displayName}
+                size="sm"
               />
             ))}
           </div>
-          <p className="font-bold text-lg">
-            {selectedConversation?.group.name}
-          </p>
+          <div className="min-w-0">
+            <p className="font-semibold text-sm truncate text-foreground">
+              {selectedConversation.group.name}
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              {selectedConversation.participants.length} thành viên
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Action buttons (decorative for now) */}
+      {selectedConversation && (
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-accent transition-colors cursor-pointer">
+            <Phone
+              size={16}
+              className="text-muted-foreground hover:text-violet-500 transition-colors"
+            />
+          </button>
+          <button className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-accent transition-colors cursor-pointer">
+            <Video
+              size={16}
+              className="text-muted-foreground hover:text-violet-500 transition-colors"
+            />
+          </button>
+          <button className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-accent transition-colors cursor-pointer">
+            <Info
+              size={16}
+              className="text-muted-foreground hover:text-violet-500 transition-colors"
+            />
+          </button>
         </div>
       )}
     </div>

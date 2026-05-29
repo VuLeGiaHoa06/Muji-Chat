@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import ToasterProvider from "@/lib/providers/ToasterProvider";
 import SocketProvider from "@/lib/providers/SocketProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Muji - Chat App",
-  description: "Muji chat app for everyone",
+  title: "Muji – Chat App",
+  description: "Muji – Ứng dụng nhắn tin hiện đại, kết nối mọi người",
+  keywords: ["chat", "messaging", "realtime", "muji"],
 };
 
 export default function RootLayout({
@@ -25,9 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="vi" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased  overflow-y-hidden overflow-x-hidden`}
+        className={`${inter.variable} antialiased overflow-y-hidden overflow-x-hidden`}
+        style={{ fontFamily: "var(--font-inter), Inter, sans-serif" }}
       >
         <SocketProvider>{children}</SocketProvider>
         <ToasterProvider />

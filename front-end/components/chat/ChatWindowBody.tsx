@@ -7,11 +7,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import MessageItem from "./MessageItem";
 import ChatWindowSekeleton from "./ChatWindowSekeleton";
 import { Conversation } from "@/types/chat";
+import { MessageCircle } from "lucide-react";
 
 const ChatWindowBody = ({ selectedConv }: { selectedConv: Conversation }) => {
-  // =========================================
-  // 1. STORE & HOOKS (Dữ liệu toàn cục)
-  // =========================================
   const {
     activeConversationId,
     messages: allMessage,
@@ -19,9 +17,6 @@ const ChatWindowBody = ({ selectedConv }: { selectedConv: Conversation }) => {
     messageLoading: loading,
   } = useChatStore();
 
-  // =========================================
-  // 2. LOCAL STATE (Biến nội bộ)
-  // =========================================
   const [lastMessageStatus, setLastMessageStatus] = useState<
     "seen" | "delivered"
   >("delivered");
@@ -30,56 +25,31 @@ const ChatWindowBody = ({ selectedConv }: { selectedConv: Conversation }) => {
   const hasMore = allMessage[activeConversationId!]?.hasMore ?? false;
   const scrollKey = `chat-scroll-${activeConversationId}`;
 
-  // =========================================
-  // 3. REFS (Tham chiếu DOM hoặc biến mutable)
-  // =========================================
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const container = useRef<HTMLDivElement>(null);
 
-  // =========================================
-  // 4. SIDE EFFECTS (API calls, Subscriptions)
-  // =========================================
-
-  // xử lý trạng thái seen và delivered
   useEffect(() => {
     const lastMessage = selectedConv?.lastMessage ?? null;
     if (!lastMessage) return;
-
     const seenBy = selectedConv?.seenBy ?? [];
-
-    // Seenby mà tăng lên 1 - thì tức là userB đã xem
     setLastMessageStatus(seenBy.length > 0 ? "seen" : "delivered");
   }, [selectedConv]);
 
-  // Giữ nguyên vị trí scroll khi f5
   useLayoutEffect(() => {
     if (!container.current) return;
-
     const value = sessionStorage.getItem(scrollKey);
     if (!value) return;
     const { scrollTop } = JSON.parse(value);
-
     container.current.scrollTop = scrollTop;
   }, [allMessage]);
 
-  // tự động scroll down
   useLayoutEffect(() => {
     if (!messagesEndRef?.current) return;
-
-    messagesEndRef?.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [activeConversationId, allMessage]);
 
-  // =========================================
-  // 5. EVENT HANDLERS (Xử lý sự kiện)
-  // =========================================
-
-  // lấy thêm message cũ
   const fetchMoreMessages = async () => {
     if (!activeConversationId) return;
-
     try {
       await fetchMessages();
     } catch (error) {
@@ -87,34 +57,37 @@ const ChatWindowBody = ({ selectedConv }: { selectedConv: Conversation }) => {
     }
   };
 
-  // Handle scroll poistion
   const handleScroll = () => {
     if (!container.current || !activeConversationId) return;
-
     const position = container.current.scrollTop;
-
     sessionStorage.setItem(scrollKey, JSON.stringify({ scrollTop: position }));
   };
 
-  // =========================================
-  // 6. RENDER (JSX)
-  // =========================================
-  // Nếu chưa có cuộc trò chuyện nào được chọn
-  if (!selectedConv) {
-    return <ChatWelcomeScreen />;
-  }
+  if (!selectedConv) return <ChatWelcomeScreen />;
 
-  // Đang trong trạng thái loading message
-  if (loading) {
-    return <ChatWindowSekeleton />;
-  }
+  if (loading) return <ChatWindowSekeleton />;
 
-  // Nếu không có tin nhắn nào trong cuộc trò chuyện
+  // Empty conversation
   if (selectedConv.lastMessage === null) {
     return (
-      <p className="font-bold text-2xl h-full flex items-center justify-center bg-linear-to-r from-pink-400 via-purple-400 to-indigo-400 text-transparent bg-clip-text">
-        Hãy bắt đầu cuộc trò chuyện nào
-      </p>
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 chat-bg-pattern">
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(236,72,153,0.1))",
+            border: "1px solid rgba(124,58,237,0.2)",
+          }}
+        >
+          <MessageCircle size={28} className="text-violet-500" />
+        </div>
+        <p className="font-bold text-xl muji-gradient-text text-center">
+          Hãy bắt đầu cuộc trò chuyện nào! 🎉
+        </p>
+        <p className="text-muted-foreground text-sm text-center">
+          Gửi tin nhắn đầu tiên để phá băng nhé
+        </p>
+      </div>
     );
   }
 
@@ -123,22 +96,25 @@ const ChatWindowBody = ({ selectedConv }: { selectedConv: Conversation }) => {
       ref={container}
       onScroll={handleScroll}
       id="scrollableDiv"
-      className="flex flex-col-reverse justify-start h-full gap-3 overflow-x-hidden overflow-y-auto "
+      className="flex flex-col-reverse justify-start h-full gap-0 overflow-x-hidden overflow-y-auto chat-bg-pattern"
     >
-      <div ref={messagesEndRef}></div>
-      {/*Put the scroll bar always on the bottom*/}
+      <div ref={messagesEndRef} />
       <InfiniteScroll
         dataLength={messages.length}
         next={fetchMoreMessages}
         style={{
           display: "flex",
           flexDirection: "column-reverse",
-          gap: "3px",
-          padding: "15px",
-        }} //To put endMessage and loader to the top.
-        inverse={true} //
+          gap: "2px",
+          padding: "16px 16px 8px 16px",
+        }}
+        inverse={true}
         hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
+        loader={
+          <div className="flex justify-center py-3">
+            <div className="w-6 h-6 rounded-full border-2 border-transparent border-t-violet-500 animate-spin" />
+          </div>
+        }
         scrollableTarget="scrollableDiv"
       >
         {reversedMessages.map((m, index) => (

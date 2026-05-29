@@ -1,13 +1,12 @@
+"use client";
+
 import { Conversation } from "@/types/chat";
 import AvatarImg from "@/components/avatar/AvatarImg";
 import { useChatStore } from "@/stores/useChatStore";
 import { cn, formatOnlineTime } from "@/lib/utils";
-import { Ellipsis } from "lucide-react";
+import { Users } from "lucide-react";
 
 const GroupChatCard = ({ conv }: { conv: Conversation }) => {
-  // =========================================
-  // 1. STORE & HOOKS (Dữ liệu toàn cục)
-  // =========================================
   const {
     activeConversationId,
     setActiveConversation,
@@ -15,60 +14,97 @@ const GroupChatCard = ({ conv }: { conv: Conversation }) => {
     messages,
   } = useChatStore();
 
-  // =========================================
-  // 2. LOCAL STATE (Biến nội bộ)
-  // =========================================
+  const isActive = activeConversationId === conv._id;
   const timestamp =
     conv.lastMessage === null ? "" : new Date(conv.lastMessage.createdAt);
 
-  // =========================================
-  // 3. EVENT HANDLERS (Xử lý sự kiện)
-  // =========================================
+  const lastMsg = conv.lastMessage
+    ? conv.lastMessage.content || "📷 Ảnh"
+    : "Chưa có tin nhắn";
+
   const handleClick = async (id: string) => {
     setActiveConversation(id);
-
     if (!messages?.[id]) await fetchMessages(id);
   };
 
-  // =========================================
-  // 4. RENDER (JSX)
-  // =========================================
   return (
     <div
+      id={`group-card-${conv._id}`}
       className={cn(
-        "border-2 border-gray-300 shadow-sm bg-white cursor-pointer rounded-xl p-3 flex gap-2 justify-between",
-        activeConversationId === conv._id
-          ? "border-2 border-purple-500 bg-purple-50"
-          : "",
+        "group relative flex gap-3 items-center px-3 py-2.5 rounded-2xl cursor-pointer transition-all duration-200",
+        isActive ? "shadow-sm" : "hover:bg-accent",
       )}
+      style={
+        isActive
+          ? {
+              background:
+                "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(236,72,153,0.08))",
+              border: "1px solid rgba(124,58,237,0.2)",
+            }
+          : { border: "1px solid transparent" }
+      }
       onClick={() => handleClick(conv._id)}
     >
-      <div className="flex gap-3 items-center w-full">
-        {/* Avatar */}
-        <div className="flex -space-x-2">
-          {conv.participants.map((p) => (
-            <div key={p._id}>
-              <AvatarImg avatarUrl={p?.avatarUrl} name={p.displayName} />
-            </div>
-          ))}
-        </div>
+      {/* Active left accent */}
+      {isActive && (
+        <div
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full"
+          style={{ background: "linear-gradient(180deg, #7c3aed, #ec4899)" }}
+        />
+      )}
 
-        <div className="w-full">
-          <div className="flex items-center justify-between">
-            <p className="font-bold">{conv.group.name}</p>
-            <p className="text-gray-400">
-              {timestamp && formatOnlineTime(timestamp)}
-            </p>
+      {/* Stacked Avatars */}
+      <div className="relative flex-shrink-0 w-10 h-10">
+        {conv.participants.slice(0, 2).map((p, i) => (
+          <div
+            key={`${p._id || p?.displayName || "part"}-${i}`}
+            className="absolute"
+            style={{
+              width: 28,
+              height: 28,
+              top: i === 0 ? 0 : "auto",
+              bottom: i === 1 ? 0 : "auto",
+              left: i === 0 ? 0 : "auto",
+              right: i === 1 ? 0 : "auto",
+              zIndex: i === 0 ? 1 : 2,
+            }}
+          >
+            <AvatarImg
+              avatarUrl={p?.avatarUrl}
+              name={p.displayName}
+              size="sm"
+            />
           </div>
-          <div className="flex items-center justify-between">
-            <p className="text-gray-400">
-              {conv.participants.length} thành viên
-            </p>
-            <div className="hover:bg-gray-100 rounded-full p-2 -mr-2">
-              <Ellipsis size={18} />
-            </div>
+        ))}
+        {/* Group icon for 0-participant edge case */}
+        {conv.participants.length === 0 && (
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, #7c3aed, #ec4899)" }}
+          >
+            <Users size={18} className="text-white" />
           </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-1 mb-0.5">
+          <p
+            className={cn(
+              "font-semibold text-sm truncate",
+              isActive ? "muji-gradient-text" : "text-foreground",
+            )}
+          >
+            {conv.group.name}
+          </p>
+          <p className="text-[11px] text-muted-foreground flex-shrink-0">
+            {timestamp && formatOnlineTime(timestamp)}
+          </p>
         </div>
+        <p className="text-xs text-muted-foreground truncate">
+          {conv.participants.length} thành viên · {lastMsg}
+        </p>
       </div>
     </div>
   );

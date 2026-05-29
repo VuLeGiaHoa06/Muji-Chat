@@ -1,3 +1,5 @@
+"use client";
+
 import { Plus } from "lucide-react";
 import { NewGroupDialog } from "@/components/createNewGroup";
 import { useState } from "react";
@@ -10,17 +12,27 @@ const NewGroupChatModal = () => {
   // LOCAL STATE
   const [open, setOpen] = useState<boolean>(false);
 
-  const handleClick = async () => {
+  const handleClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setOpen((prev) => !prev);
 
-    await getAllFriend();
+    try {
+      await getAllFriend();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <>
-      <button onClick={handleClick} type="button" className="cursor-pointer">
-        <Plus size={16} className="text-gray-500" />
-      </button>
+      <div
+        onClick={handleClick}
+        className="w-full h-full flex items-center justify-center cursor-pointer text-zinc-500 hover:text-violet-500 dark:hover:text-violet-400 transition-colors"
+        title="Tạo nhóm chat mới"
+      >
+        <Plus size={15} className="hover:scale-110 transition-transform" />
+      </div>
 
       {open && <NewGroupDialog open={open} setOpen={setOpen} />}
     </>

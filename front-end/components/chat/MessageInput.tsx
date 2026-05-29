@@ -1,197 +1,180 @@
-import { Image, SendHorizontal } from "lucide-react";
-import { Input } from "../ui/input";
+"use client";
+
+import { ImageIcon, SendHorizonal, X } from "lucide-react";
 import { KeyboardEvent, useRef, useState } from "react";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
 import EmojiPicker from "./EmojiPicker";
 import { useChatStore } from "@/stores/useChatStore";
 import { Conversation } from "@/types/chat";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { cn } from "@/lib/utils";
-import { set } from "zod";
 
 const MessageInput = ({ selectedConv }: { selectedConv: Conversation }) => {
-  // =========================================
-  // 1. STORE & HOOKS (Dữ liệu toàn cục)
-  // =========================================
   const { sendDirectMessage, sendGroupMessage } = useChatStore();
   const { user } = useAuthStore();
 
-  // =========================================
-  // 2. GUARD CLAUSE (Mệnh đề bảo vệ)
-  // =========================================
-  if (!user) return;
+  if (!user) return null;
 
-  // =========================================
-  // 3. LOCAL STATE (Biến nội bộ)
-  // =========================================
   const [value, setValue] = useState("");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [isFocused, setIsFocused] = useState(false);
 
-  // =========================================
-  // 3. REFS (Tham chiếu DOM hoặc biến mutable)
-  // =========================================
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadImageRef = useRef<HTMLInputElement>(null);
 
-  // =========================================
-  // 4. EVENT HANDLERS (Xử lý sự kiện)
-  // =========================================
-  const handlSendMessage = async () => {
+  const hasContent = value.trim().length > 0 || selectedImages.length > 0;
+
+  const handleSendMessage = async () => {
+    if (!hasContent) return;
     try {
       const formData = new FormData();
-
-      selectedImages.forEach((f) => {
-        formData.append("images", f);
-      });
+      selectedImages.forEach((f) => formData.append("images", f));
 
       if (selectedConv.type === "direct") {
         const participant = selectedConv.participants.find(
           (p) => p._id !== user._id,
         );
-
         if (!participant) return;
-
-        formData.append("recipientId", participant?._id);
+        formData.append("recipientId", participant._id);
         formData.append("content", value);
         formData.append("conversationId", selectedConv._id);
-
         await sendDirectMessage(formData);
-
         setSelectedImages([]);
         setPreviewImages([]);
       } else {
         await sendGroupMessage(selectedConv._id, value);
       }
 
-      if (!inputRef.current) return;
-      inputRef.current.focus();
+      inputRef.current?.focus();
     } catch (err) {
-      console.log("MessageInput_handleSenMessage", err);
+      console.log("MessageInput_handleSendMessage", err);
     } finally {
       setValue("");
     }
   };
 
   const handleKeyPress = async (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      await handlSendMessage();
+      await handleSendMessage();
     }
   };
 
-  const handleClick = () => {
-    if (!uploadImageRef.current) return;
-
-    uploadImageRef.current.click();
-  };
+  const handleClick = () => uploadImageRef.current?.click();
 
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const imageFile = e.target.files?.[0];
-
-    if (imageFile) {
-      setSelectedImages((prev) =>
-        prev === null ? [imageFile] : [...prev, imageFile],
-      );
-
-      const url = URL.createObjectURL(imageFile);
-      setPreviewImages((prev) => [...prev, url]);
-    } else {
-      return;
-    }
-
-    const formData = new FormData();
-
-    // formData.append("imageFile", imageFile);
-
-    console.log({ formData });
+    if (!imageFile) return;
+    setSelectedImages((prev) => [...prev, imageFile]);
+    setPreviewImages((prev) => [...prev, URL.createObjectURL(imageFile)]);
   };
 
-  const handleDeleteIamge = (id: number) => {
-    const updatedSelected = selectedImages?.filter((_, index) => id !== index);
-    const updatedPreview = previewImages?.filter((_, index) => id !== index);
-
-    if (!updatedSelected) return;
-
-    setSelectedImages(updatedSelected);
-    setPreviewImages(updatedPreview);
+  const handleDeleteImage = (id: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== id));
+    setPreviewImages((prev) => prev.filter((_, i) => i !== id));
   };
 
   return (
-    <div className="relative min-h-[58px] bg-gray-100 px-4 py-3">
-      {previewImages && (
-        <div className="flex items-center gap-2 mb-5">
+    <div
+      className="px-4 py-3 border-t border-border"
+      style={{ background: "var(--message-input-bg)" }}
+    >
+      {/* Image preview strip */}
+      {previewImages.length > 0 && (
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           {previewImages.map((img, index) => (
-            <div key={index} className="h-15 w-15 mb-10 relative group">
+            <div key={index} className="relative group">
               <img
                 src={img}
                 alt="preview"
-                className="object-cover w-full h-full rounded-lg"
+                className="w-16 h-16 object-cover rounded-xl border border-border"
               />
-
               <button
                 type="button"
-                onClick={() => handleDeleteIamge(index)}
-                className="absolute right-2 text-sm top-0 text-white px-1 py-0.5  rounded-full bg-black hover:bg-black/90 hidden group-hover:block"
+                onClick={() => handleDeleteImage(index)}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-gray-900 border border-border text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
               >
-                x
+                <X size={10} />
               </button>
             </div>
           ))}
         </div>
       )}
-      <form className="flex items-center sticky bottom-3 w-full">
-        {/* Upload Image */}
-        <button
-          onClick={handleClick}
-          type="button"
-          className="cursor-pointer mr-3 group relative"
-        >
-          <Image size={18} />
 
-          <p className="absolute  text-nowrap cursor-default -top-10 max-[100px] -left-1/2 text-sm group-hover:block hidden bg-gray-200 rounded-lg p-2">
-            Upload Image
-          </p>
+      {/* Input bar */}
+      <div
+        className={cn(
+          "flex items-center gap-2 px-3 py-2 rounded-2xl transition-all duration-200",
+          isFocused ? "ring-1 ring-violet-500/50" : "ring-1 ring-transparent",
+        )}
+        style={{ background: "var(--input)" }}
+      >
+        {/* Image upload */}
+        <button
+          type="button"
+          onClick={handleClick}
+          className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all hover:scale-110"
+          style={{ color: "var(--muted-foreground)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#7c3aed")}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = "var(--muted-foreground)")
+          }
+          title="Gửi ảnh"
+        >
+          <ImageIcon size={18} />
         </button>
 
         <input
           type="file"
           ref={uploadImageRef}
           className="hidden"
+          accept="image/*"
           onChange={handleUploadImage}
         />
 
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-[orientation=vertical]:h-4"
+        {/* Text input */}
+        <input
+          ref={inputRef}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyPress}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder="Nhắn tin..."
+          className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground text-foreground min-w-0"
         />
 
-        <div className="flex flex-1 items-center -mr-8">
-          {/* Input */}
-          <Input
-            onKeyDown={handleKeyPress}
-            ref={inputRef}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            className="border border-gray-200 rounded-xl mx-3 "
-            placeholder="Soạn tin nhắn..."
-          />
-
-          {/* Emoji */}
-          <EmojiPicker onChange={(emoji) => setValue(`${value}${emoji}`)} />
-        </div>
+        {/* Emoji picker */}
+        <EmojiPicker onChange={(emoji) => setValue(`${value}${emoji}`)} />
 
         {/* Send button */}
-        <Button
-          disabled={!value && selectedImages.length === 0}
+        <button
           type="button"
-          className="cursor-pointer"
-          onClick={handlSendMessage}
+          onClick={handleSendMessage}
+          disabled={!hasContent}
+          className={cn(
+            "flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200",
+            hasContent
+              ? "cursor-pointer hover:scale-110"
+              : "cursor-not-allowed opacity-40",
+          )}
+          style={
+            hasContent
+              ? {
+                  background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+                  boxShadow: "0 4px 12px rgba(124,58,237,0.4)",
+                  color: "white",
+                }
+              : {
+                  background: "var(--muted)",
+                  color: "var(--muted-foreground)",
+                }
+          }
+          title="Gửi"
         >
-          <SendHorizontal size={18} />
-        </Button>
-      </form>
+          <SendHorizonal size={16} />
+        </button>
+      </div>
     </div>
   );
 };
