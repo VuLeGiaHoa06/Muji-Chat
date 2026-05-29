@@ -12,7 +12,7 @@ const GroupChatList = () => {
   if (groupChats.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 px-4 text-center select-none animate-fade-in">
-        <div className="w-14 h-14 mb-2.5 rounded-2xl bg-gradient-to-br from-violet-500/10 to-pink-500/10 flex items-center justify-center relative">
+        <div className="w-14 h-14 mb-2.5 rounded-2xl bg-linear-to-br from-violet-500/10 to-pink-500/10 flex items-center justify-center relative">
           <svg
             className="w-7 h-7 text-violet-500/80 dark:text-violet-400/80"
             fill="none"
@@ -32,7 +32,7 @@ const GroupChatList = () => {
         <span className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
           Chưa có nhóm chat nào
         </span>
-        <p className="text-[9px] text-zinc-400/80 dark:text-zinc-500/80 mt-0.5 max-w-[160px]">
+        <p className="text-[9px] text-zinc-400/80 dark:text-zinc-500/80 mt-0.5 max-w-40">
           Hãy tạo một nhóm chat mới để kết nối bạn bè nhé!
         </p>
       </div>
