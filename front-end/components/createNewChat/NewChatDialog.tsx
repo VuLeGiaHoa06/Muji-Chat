@@ -26,8 +26,8 @@ const NewChatDialog = ({
   // Lọc bạn bè real-time dựa trên tên hoặc username
   const filteredFriends = friends.filter(
     (f) =>
-      f.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      f.username.toLowerCase().includes(searchTerm.toLowerCase()),
+      f?.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      f?.username.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
